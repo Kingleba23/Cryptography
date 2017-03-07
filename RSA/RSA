@@ -1,0 +1,137 @@
+// для работы программы подключить библиотеку gmp
+
+
+
+#include "stdafx.h"
+#include <vector>
+#include <iterator>
+#include <iostream>
+#include <math.h>
+#include <mpirxx.h>
+using namespace std;
+
+
+
+
+int evclid(int, int);
+long long euler(int);
+
+
+
+
+int main()
+{
+	vector<int> a1;
+	
+	int p = 877;
+	int q = 983;
+	long long n = p*q;
+	long long el = euler(n);
+	int exp = 13;
+    int d = 1;
+
+	
+	
+	
+    mpz_class w;
+	mpz_class v;
+	char ch;
+
+	
+	cout << "Plese, enter your message; Enter # to quit" << endl;
+	cin.get(ch);
+	if (ch != '#')
+	{
+		int t = (int)(ch);
+	    a1.push_back(t);
+
+	}
+
+	while (ch != '#')
+	{
+		cin.get(ch);
+		int t = (int)(ch);
+		
+		a1.push_back(t);
+	}
+	cout << endl << endl;
+	a1.pop_back();
+	cout << "Your message in ASCII:" << endl;
+	copy(a1.begin(), a1.end(), ostream_iterator<int>(cout, " "));
+	cout << endl;
+	int size = a1.size();
+	mpz_class* mas1 = new mpz_class[size];
+	mpz_class* mas2 = new mpz_class[size];
+
+	cout << endl << endl;
+	
+	cout << "Coded message:" << endl << endl;
+	for (int i = 0; i < size; i++)
+	{
+		mpz_pow_ui(w.get_mpz_t(), mpz_class(a1[i]).get_mpz_t(), exp);
+		
+		mas1[i] = w % n;
+
+		cout << mas1[i] <<"  ";
+
+	}
+
+	cout << endl << endl;
+	while ((d*exp) % el != 1)
+		d++;
+
+	cout << "Uncoded message:" << endl;
+	for (int i = 0; i < size; i++)
+	{
+		
+		mpz_pow_ui(v.get_mpz_t(), mpz_class(mas1[i]).get_mpz_t(), d);
+		
+		mas2[i] = v % n;
+		cout << mas2[i] << "  ";
+
+	}
+	cout << endl << endl;
+
+	long size1 = sizeof(char);
+	long numb = 8 * size1 ;
+	long count = (mpz_sizeinbase(mas2[0].get_mpz_t(), 2) + numb - 1) / numb;
+	char *h = new char[100];
+	
+
+	
+	for (int i = 0; i < size; i++)
+	{
+	
+		char buffer[64];
+		mpz_export(buffer, NULL, 1, 1, 0, 0, mas2[i].get_mpz_t());
+		cout << buffer[0];
+	}
+	cout << endl<<endl;
+	
+
+	system("pause");
+	return 0;
+}
+
+int  evclid(int n, int k)
+{
+
+	while (n && k)
+		if (n >= k)
+			n %= k;
+		else
+			k %= n;
+	return n + k;
+
+}
+long long euler(int n)
+{
+	int M = 0;
+	for (int i = 1; i < n; i++)
+	{
+		int N = evclid(n, i);
+		if (N == 1)
+			M = M + 1;
+	}
+	return M;
+}
